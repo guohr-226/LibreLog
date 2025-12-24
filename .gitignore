@@ -1,4 +1,3 @@
-```
 # Python
 __pycache__/
 *.pyc
@@ -9,6 +8,8 @@ __pycache__/
 .env
 .env.local
 *.env.*
+.venv/  # uv虚拟环境目录
+full_dataset/  # 数据集目录
 
 # Logs
 *.log
@@ -31,9 +32,10 @@ htmlcov/
 
 # Pytest
 .pytest_cache/
-```
 
-/full_dataset
-/.venv
+# 敏感/密钥文件
+openapi_key.txt  # 你的OpenAI密钥文件
 
-openapi_key.txt
+# 项目特定目录
+results/  # 可选：若结果文件无需提交也加入
+evaluation/  # 可选：若评估结果无需提交也加入
