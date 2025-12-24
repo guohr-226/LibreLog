@@ -32,3 +32,8 @@ htmlcov/
 # Pytest
 .pytest_cache/
 ```
+
+/full_dataset
+/.venv
+
+openapi_key.txt
