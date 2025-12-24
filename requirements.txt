@@ -5,5 +5,4 @@ tiktoken==0.4.0
 blobfile
 transformers
 regex
-hashlib
 textdistance
