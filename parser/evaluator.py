@@ -26,6 +26,7 @@ parser.add_argument(
 parser.add_argument("--sample", type=str, default="3")
 parser.add_argument("--similarity", type=str, default="jaccard")
 parser.add_argument("--do_self_reflection", type=str, default="True")
+parser.add_argument("--use_dashscope_api", type=str, default="False", help="使用DashScope API而不是本地模型")
 args = parser.parse_args()
 
 datasets_full = args.project.split(",")
@@ -33,6 +34,7 @@ model_path = args.model
 similarity = args.similarity
 regex_sample = int(args.sample)
 do_self_reflection = args.do_self_reflection
+use_dashscope_api = args.use_dashscope_api.lower() == "true"  # 将字符串转换为布尔值
 
 benchmark_settings = {
     "HDFS": {
@@ -413,6 +415,7 @@ if __name__ == "__main__":
             regex_sample=regex_sample,
             similarity=similarity,
             do_self_reflection=do_self_reflection,
+            use_dashscope_api=use_dashscope_api,
         )
         for eventid in tqdm(groups_dict.keys(), desc=f"Processing events {system}"):
             append_unique_to_csv(groups_dict[eventid], out_path + "group.csv")

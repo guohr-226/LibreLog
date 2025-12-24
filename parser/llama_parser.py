@@ -18,6 +18,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from random import shuffle
 from datetime import datetime
 
+# 导入DashScope API配置
+try:
+    from .api_config import get_llm_client
+except ImportError:
+    # 如果相对导入失败，尝试绝对导入
+    from parser.api_config import get_llm_client
+
 def replace_bracketed_uppercase(text):
     pattern = r'<[A-Z_]+>'
     replaced_text = re.sub(pattern, '<*>', text)
@@ -76,7 +83,8 @@ class LogParser:
             model="Meta-Llama-3-8B-Instruct",
             regex_sample=5,
             similarity="jaccard",
-            do_self_reflection="True"
+            do_self_reflection="True",
+            use_dashscope_api=False  # 新增参数，用于启用DashScope API
     ):
         self.total_time = 0.0
         self.new_event = 0
@@ -86,6 +94,7 @@ class LogParser:
         self.regex_manager1 = regex_manager1
         self.similarity = similarity
         self.do_self_reflection = do_self_reflection
+        self.use_dashscope_api = use_dashscope_api  # 设置是否使用DashScope API
         print("llama_parser is ready.", flush=True)
     
     def cosine_similarity_distance(self,x, y):
@@ -429,6 +438,21 @@ class LogParser:
             regex = self.check_and_modify_regex(regex, log)
         return regex
 
+    def call_dashscope_api(self, messages, model="qwen-turbo"):
+        """
+        使用DashScope API调用LLM
+        """
+        client = get_llm_client()
+        
+        completion = client.chat.completions.create(
+            model=model,  # 可以根据需要更换为其他模型
+            messages=messages,
+            extra_body={"enable_thinking": True},
+            stream=False  # 使用非流式输出以简化处理
+        )
+        
+        return completion.choices[0].message.content
+
     def generate_log_template_using_pipeline(self,
                                              log_list,
                                              dic=False,
@@ -439,6 +463,28 @@ class LogParser:
             if dic:
                 log_list = get_logs_from_group(log_list)
             return re.escape(log_list[0]).replace("\ ", " ")
+        
+        # 检查是否使用DashScope API模式
+        if hasattr(self, 'use_dashscope_api') and self.use_dashscope_api:
+            # 使用DashScope API模式
+            try:
+                # 为DashScope API生成合适的提示
+                prompt, sampled_log_list = self.generate_prompt_with_log_list(log_list, dic=dic)
+                # 提取用户消息内容
+                user_content = prompt.split("ASSISTANT:")[-1].strip() if "ASSISTANT:" in prompt else prompt
+                
+                messages = [
+                    {"role": "system", "content": "You will be provided with a list of logs. You must identify and abstract all the dynamic variables in logs with '<*>' and output ONE static log template that matches all the logs. Print the input logs' template delimited by backticks."},
+                    {"role": "user", "content": user_content}
+                ]
+                
+                response = self.call_dashscope_api(messages)
+                return self.clean_regex(sampled_log_list[0], self.template_to_regex(response))
+            except Exception as e:
+                print(f"DashScope API调用失败: {e}, 回退到本地模型", flush=True)
+                # 如果API调用失败，回退到原来的本地模型逻辑
+        
+        # 原来的本地模型逻辑
         try:
             if "chatglm" in self.model:
                 messages, sampled_log_list = self.generate_prompt_with_log_list_chatglm(log_list,dic=dic)
