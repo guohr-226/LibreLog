@@ -1,19 +1,28 @@
-import grouping
 import os
 import torch
 import csv
 import sys
 import argparse
-import llama_parser
-import transformers
 import regex as re
 import pandas as pd
-import regex_manager
-import accuracy
+import transformers
 from transformers import AutoTokenizer, AutoModel
 from datetime import datetime
 from tqdm import tqdm
 from pathlib import Path
+
+# Handle relative imports properly
+try:
+    from . import grouping
+    from . import llama_parser
+    from . import regex_manager
+    from . import accuracy
+except ImportError:
+    # Fallback for when running as main script
+    import grouping
+    import llama_parser
+    import regex_manager
+    import accuracy
 
 
 parser = argparse.ArgumentParser()

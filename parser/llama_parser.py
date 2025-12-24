@@ -17,6 +17,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from random import shuffle
 from datetime import datetime
+try:
+    from .api_config import get_llm_client
+except ImportError:
+    try:
+        # Fallback for when running as main script
+        from api_config import get_llm_client
+    except ImportError:
+        # Fallback if the api_config is not needed
+        def get_llm_client():
+            return None
 
 def replace_bracketed_uppercase(text):
     pattern = r'<[A-Z_]+>'
