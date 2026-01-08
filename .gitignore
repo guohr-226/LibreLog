@@ -34,8 +34,9 @@ htmlcov/
 .pytest_cache/
 
 # 敏感/密钥文件
-openapi_key.txt  # 你的OpenAI密钥文件
+openai_key.txt  # 你的OpenAI密钥文件
 
 # 项目特定目录
 results/  # 可选：若结果文件无需提交也加入
 evaluation/  # 可选：若评估结果无需提交也加入
+full_dataset/  # 可选：若数据集无需提交也加入
