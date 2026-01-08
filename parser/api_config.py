@@ -5,11 +5,10 @@ from openai import OpenAI
 def load_api_config():
     """
     从根目录的openapi_key.txt文件中加载API配置
-    文件格式：
-    https://dashscope.aliyuncs.com/compatible-mode/v1 
-    sk-4cca9e59e44f49ca8d6a5184c118d354
     """
-    config_file = "/workspace/openapi_key.txt"
+    parser_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(parser_dir)
+    config_file = os.path.join(project_root, "openai_key.txt")  # 绝对路径
     
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"API配置文件不存在: {config_file}")

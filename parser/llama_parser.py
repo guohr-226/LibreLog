@@ -12,7 +12,7 @@ import random
 import transformers
 # import regex_agent
 import textdistance
-import regex_manager
+from .regex_manager import * 
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from random import shuffle

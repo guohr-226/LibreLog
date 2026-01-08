@@ -4,11 +4,11 @@ import torch
 import csv
 import sys
 import argparse
-import llama_parser
+from . import llama_parser
 import transformers
 import regex as re
 import pandas as pd
-import regex_manager
+from .regex_manager import * 
 import accuracy
 from transformers import AutoTokenizer, AutoModel
 from datetime import datetime
