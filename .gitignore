@@ -1,0 +1,6 @@
+full_dataset/
+models/
+result_offline_similar/
+__pycache__
+*.log
+*.csv
